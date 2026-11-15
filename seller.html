@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Registration | Soko Yangu</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f5;
+  color: #1e293b;
+}
+
+header {
+  background: #087f5b;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.container {
+  max-width: 480px;
+  margin: 25px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px #00000012;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+button {
+  width: 100%;
+  background: #087f5b;
+  color: white;
+  border: none;
+  padding: 14px;
+  margin-top: 22px;
+  border-radius: 8px;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+a {
+  color: #087f5b;
+  text-decoration: none;
+}
+
+#message {
+  text-align: center;
+  margin-top: 15px;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Soko Yangu</h1>
+  <p>Kenya Marketplace 🇰🇪</p>
+</header>
+
+<div class="container">
+
+<a href="index.html">← Back to Marketplace</a>
+
+<h2>Become a Seller</h2>
+<p>Register your business and start selling.</p>
+
+<form id="sellerForm">
+
+<label for="name">Full Name</label>
+<input type="text" id="name" required>
+
+<label for="business">Business Name</label>
+<input type="text" id="business" required>
+
+<label for="phone">Phone Number</label>
+<input type="tel" id="phone"
+placeholder="07XXXXXXXX" required>
+
+<label for="location">Location</label>
+<input type="text" id="location"
+placeholder="e.g. Nairobi" required>
+
+<label for="email">Email Address</label>
+<input type="email" id="email" required>
+
+<label for="password">Password</label>
+<input type="password" id="password"
+minlength="8" required>
+
+<button type="submit">Register as a Seller</button>
+
+</form>
+
+<p id="message"></p>
+
+</div>
+
+<footer>
+  © 2026 Soko Yangu
+</footer>
+
+<script>
+document.getElementById("sellerForm")
+.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  document.getElementById("message")
+  .textContent =
+  "Form ready. Database connection pending.";
+});
+</script>
+
+</body>
+</html>
