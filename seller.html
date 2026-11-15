@@ -128,16 +128,112 @@ minlength="8" required>
   © 2026 Soko Yangu
 </footer>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-document.getElementById("sellerForm")
-.addEventListener("submit", function(event) {
+const db = supabase.createClient(
+  "https://pvhzkzadfdpvgvliirxr.supabase.co",
+  "sb_publishable_Jd8HUSb-wBdrfDJTmXeNGQ_KH0Xe4Cz"
+);
+
+const form = document.getElementById("sellerForm");
+const message = document.getElementById("message");
+const button = form.querySelector("button");
+
+async function saveSeller(user) {
+  const details = user.user_metadata;
+
+  const { error } = await db
+    .from("Sellers")
+    .upsert({
+      id: user.id,
+      name: details.name,
+      business_name: details.business_name,
+      phone: details.phone,
+      location: details.location
+    }, {
+      onConflict: "id",
+      ignoreDuplicates: true
+    });
+
+  if (error) throw error;
+
+  message.style.color = "#087f5b";
+  message.textContent =
+    "Seller registration successful! Welcome to Soko Yangu.";
+
+  form.reset();
+  form.style.display = "none";
+}
+
+form.addEventListener("submit", async function(event) {
   event.preventDefault();
 
-  document.getElementById("message")
-  .textContent =
-  "Form ready. Database connection pending.";
+  button.disabled = true;
+  message.style.color = "#1e293b";
+  message.textContent = "Creating your seller account...";
+
+  try {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const { data, error } = await db.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        emailRedirectTo: window.location.origin +
+          window.location.pathname,
+        data: {
+          name: document.getElementById("name").value.trim(),
+          business_name: document.getElementById("business").value.trim(),
+          phone: document.getElementById("phone").value.trim(),
+          location: document.getElementById("location").value.trim()
+        }
+      }
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      await saveSeller(data.user);
+    } else {
+      message.style.color = "#087f5b";
+      message.textContent =
+        "Check your email and click the confirmation link to complete registration.";
+      form.reset();
+    }
+
+  } catch (error) {
+    message.style.color = "red";
+    message.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
 });
+
+async function completeRegistration() {
+  try {
+    const { data, error } = await db.auth.getSession();
+
+    if (error) throw error;
+
+    if (data.session) {
+      const user = data.session.user;
+
+      if (user.user_metadata.business_name) {
+        await saveSeller(user);
+      }
+    }
+  } catch (error) {
+    message.style.color = "red";
+    message.textContent = error.message;
+  }
+}
+
+completeRegistration();
 </script>
+
 
 </body>
 </html>
