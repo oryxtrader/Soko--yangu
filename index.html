@@ -248,6 +248,70 @@ function viewProduct(button) {
 }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const marketDB = window.supabase.createClient(
+  
+"https://pvhzkzadfdpvgvliirxr.supabase.co",
+
+  "sb_publishable_Jd8HUSb-wBdrfDJTmXeNGQ_KH0Xe4Cz"
+);
+
+async function loadProducts() {
+  const container = document.getElementById("products");
+
+  const { data, error } = await marketDB
+    .from("Products")
+    .select("Name, Price, location, category, stock_quantity, is_available")
+    .eq("is_available", true)
+    .gt("stock_quantity", 0);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  container.innerHTML = "";
+
+  if (data.length === 0) {
+    container.textContent = "No products available yet.";
+    return;
+  }
+
+  data.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "product";
+
+    const image = document.createElement("div");
+    image.className = "product-image";
+    image.textContent = "🛍️";
+
+    const name = document.createElement("h3");
+    name.textContent = item.Name;
+
+    const location = document.createElement("p");
+    location.textContent = item.location || "Kenya";
+
+    const price = document.createElement("p");
+    price.className = "price";
+    price.textContent = "KSh " +
+      Number(item.Price).toLocaleString("en-KE");
+
+    const button = document.createElement("button");
+    button.textContent = "View Product";
+    button.onclick = () => viewProduct(button);
+
+    card.append(image, name, location, price, button);
+    container.appendChild(card);
+  });
+
+  searchProducts();
+}
+
+loadProducts();
+</script>
+
 
 </body>
 </html>
