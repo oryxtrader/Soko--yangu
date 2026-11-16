@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details | Soko Yangu</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f5;
+  color: #1e293b;
+}
+
+header {
+  background: #087f5b;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px #00000010;
+}
+
+.product-image {
+  background: #e6f4ea;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 100px;
+  padding: 40px 10px;
+}
+
+.price {
+  color: #087f5b;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #087f5b;
+  color: white;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.back {
+  background: #1e293b;
+}
+
+button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 22px 0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Soko Yangu</h1>
+  <p>Product Details</p>
+</header>
+
+<div class="container">
+  <div class="card">
+
+    <div class="product-image" id="image"></div>
+
+    <h2 id="name"></h2>
+
+    <p class="price" id="price"></p>
+
+    <p id="location"></p>
+
+    <hr>
+
+    <h3>Product Description</h3>
+    <p id="description">
+      Product description coming soon.
+    </p>
+
+    <hr>
+
+    <h3>Seller Information</h3>
+    <p>Seller contact details coming soon.</p>
+
+    <button disabled>
+      Contact Seller via WhatsApp
+    </button>
+
+    <button class="back"
+      onclick="window.location.href='index.html'">
+      Back to Marketplace
+    </button>
+
+  </div>
+</div>
+
+<script>
+
+const products = {
+  smartphone: {
+    name: "Smartphone",
+    price: "KSh 15,000",
+    location: "Nairobi",
+    image: "📱"
+  },
+
+  shoes: {
+    name: "Sports Shoes",
+    price: "KSh 2,500",
+    location: "Nairobi",
+    image: "👟"
+  },
+
+  chair: {
+    name: "Office Chair",
+    price: "KSh 6,500",
+    location: "Nairobi",
+    image: "🪑"
+  },
+
+  avocados: {
+    name: "Fresh Avocados",
+    price: "KSh 100",
+    location: "Kiambu",
+    image: "🥑"
+  }
+};
+
+const params = new URLSearchParams(
+  window.location.search
+);
+
+const id = params.get("id") || "chair";
+
+const product = products[id];
+
+if (product) {
+  document.getElementById("name").textContent =
+    product.name;
+
+  document.getElementById("price").textContent =
+    product.price;
+
+  document.getElementById("location").textContent =
+    "📍 " + product.location + ", Kenya";
+
+  document.getElementById("image").textContent =
+    product.image;
+} else {
+  document.getElementById("name").textContent =
+    "Product not found";
+}
+
+</script>
+
+</body>
+</html>
