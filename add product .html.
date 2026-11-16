@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Product - Soko Yangu</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f6f5;
+  color: #1f2937;
+}
+
+header {
+  background: #087c60;
+  color: white;
+  padding: 22px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px #00000008;
+}
+
+a {
+  color: #087c60;
+  text-decoration: none;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+button {
+  width: 100%;
+  background: #087c60;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 17px;
+  margin-top: 24px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+}
+
+#message {
+  margin-top: 18px;
+  line-height: 1.5;
+  font-weight: bold;
+}
+
+.success {
+  color: #087c60;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+footer {
+  text-align: center;
+  padding: 24px;
+  color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🛍️ Soko Yangu</h1>
+  <p>Seller Product Management</p>
+</header>
+
+<div class="container">
+<div class="card">
+
+<a href="Dashboard.html">
+  ← Back to Dashboard
+</a>
+
+<h2>Add New Product</h2>
+
+<p>Enter your product details below.</p>
+
+<form id="productForm">
+
+<label for="name">Product Name</label>
+<input id="name" type="text"
+placeholder="e.g. Fresh Tomatoes" required>
+
+<label for="description">Description</label>
+<textarea id="description"
+placeholder="Describe your product"></textarea>
+
+<label for="price">Price (KSh)</label>
+<input id="price" type="number"
+min="0.01" step="0.01"
+placeholder="100" required>
+
+<label for="category">Category</label>
+<select id="category" required>
+<option value="">Select category</option>
+<option>Electronics</option>
+<option>Fashion</option>
+<option>Food & Groceries</option>
+<option>Home & Living</option>
+<option>Beauty & Health</option>
+<option>Agriculture</option>
+<option>Other</option>
+</select>
+
+<label for="location">Location</label>
+<input id="location" type="text"
+placeholder="e.g. Nairobi" required>
+
+<label for="stock">Stock Quantity</label>
+<input id="stock" type="number"
+min="0" step="1" value="1" required>
+
+<label for="image">Product Image URL (Optional)</label>
+<input id="image" type="url"
+placeholder="https://...">
+
+<button id="saveButton" type="submit">
+  Save Product
+</button>
+
+<div id="message" role="status"></div>
+
+</form>
+</div>
+</div>
+
+<footer>
+© 2026 Soko Yangu
+</footer>
+
+<script>
+const db = window.supabase.createClient(
+  "https://pvhzkzadfdpvgvliirxr.supabase.co",
+  "sb_publishable_Jd8HUSb-wBdrfDJTmXeNGQ_KH0Xe4Cz"
+);
+
+const form = document.getElementById("productForm");
+const message = document.getElementById("message");
+const button = document.getElementById("saveButton");
+
+function showMessage(text, type) {
+  message.textContent = text;
+  message.className = type;
+}
+
+async function checkLogin() {
+  const { data, error } = await db.auth.getUser();
+
+  if (error || !data.user) {
+    window.location.href = "seller.html";
+    return null;
+  }
+
+  return data.user;
+}
+
+checkLogin();
+
+form.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  button.disabled = true;
+  button.textContent = "Saving...";
+  showMessage("", "");
+
+  try {
+    const user = await checkLogin();
+
+    if (!user) return;
+
+    const stock = Number(
+      document.getElementById("stock").value
+    );
+
+    const product = {
+      Name: document.getElementById("name").value.trim(),
+      Description: document.getElementById("description").value.trim(),
+      Price: Number(document.getElementById("price").value),
+      category: document.getElementById("category").value,
+      location: document.getElementById("location").value.trim(),
+      stock_quantity: stock,
+      Image_url: document.getElementById("image").value.trim() || null,
+      is_available: stock > 0,
+      seller_id: user.id
+    };
+
+    const { error } = await db
+      .from("Products")
+      .insert(product);
+
+    if (error) throw error;
+
+    showMessage(
+      "Product saved successfully!",
+      "success"
+    );
+
+    form.reset();
+
+  } catch (error) {
+    showMessage(
+      "Unable to save product: " + error.message,
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "Save Product";
+  }
+});
+</script>
+
+</body>
+</html>
