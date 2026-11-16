@@ -276,6 +276,61 @@ document.getElementById("logoutButton")
 
 loadDashboard();
 
+document.getElementById("editProfileButton")
+  .addEventListener("click", async function () {
+
+    const name = prompt("Seller Name:",
+      document.getElementById("sellerName").textContent);
+    if (name === null) return;
+
+    const business_name = prompt("Business Name:",
+      document.getElementById("businessName").textContent);
+    if (business_name === null) return;
+
+    const phone = prompt("Phone:",
+      document.getElementById("sellerPhone").textContent);
+    if (phone === null) return;
+
+    const location = prompt("Location:",
+      document.getElementById("sellerLocation").textContent);
+    if (location === null) return;
+
+    if (!name.trim() || !business_name.trim() ||
+        !phone.trim() || !location.trim()) {
+      alert("Please complete all fields.");
+      return;
+    }
+
+    try {
+      const { data, error } = await db.auth.getUser();
+
+      if (error) throw error;
+      if (!data.user) throw new Error("Please log in again.");
+
+      const { error: updateError } = await db
+        .from("Sellers")
+        .update({
+          name: name.trim(),
+          business_name: business_name.trim(),
+          phone: phone.trim(),
+          location: location.trim()
+        })
+        .eq("id", data.user.id)
+        .select("id")
+        .single();
+
+      if (updateError) throw updateError;
+
+      alert("Business profile updated successfully!");
+      await loadDashboard();
+
+    } catch (error) {
+      alert("Unable to update profile: " + error.message);
+    }
+
+  });
+
+
 </script>
 
 </body>
