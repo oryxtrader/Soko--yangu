@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Dashboard | Soko Yangu</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f5;
+  color: #1e293b;
+}
+
+header {
+  background: #087f5b;
+  color: white;
+  padding: 25px 15px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 10px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px #0000000d;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat {
+  background: #e8f5ee;
+  padding: 18px 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.stat h2 {
+  color: #087f5b;
+  margin: 10px 0;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #087f5b;
+  color: white;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.logout {
+  background: #dc3545;
+}
+
+a {
+  color: #087f5b;
+  text-decoration: none;
+}
+
+.profile-row {
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+  overflow-wrap: anywhere;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Soko Yangu</h1>
+  <p>Seller Dashboard 🇰🇪</p>
+</header>
+
+<div class="container">
+
+<p id="status">Loading your dashboard...</p>
+
+<div id="dashboard" hidden>
+
+<div class="card">
+  <h2 id="welcome">Welcome, Seller</h2>
+  <p>Manage your business on Soko Yangu.</p>
+</div>
+
+<div class="card">
+  <div class="stats">
+    <div class="stat">
+      <p>Total Products</p>
+      <h2>—</h2>
+    </div>
+    <div class="stat">
+      <p>Total Orders</p>
+      <h2>—</h2>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Product Management</h2>
+
+  <button disabled>
+    + Add New Product
+  </button>
+
+  <button disabled>
+    My Products
+  </button>
+
+  <p>Product management coming in the next stage.</p>
+</div>
+
+<div class="card">
+  <h2>Business Profile</h2>
+
+  <div class="profile-row">
+    <strong>Seller Name:</strong>
+    <span id="sellerName"></span>
+  </div>
+
+  <div class="profile-row">
+    <strong>Business Name:</strong>
+    <span id="businessName"></span>
+  </div>
+
+  <div class="profile-row">
+    <strong>Phone:</strong>
+    <span id="sellerPhone"></span>
+  </div>
+
+  <div class="profile-row">
+    <strong>Location:</strong>
+    <span id="sellerLocation"></span>
+  </div>
+</div>
+
+<div class="card">
+  <a href="index.html">Back to Marketplace</a>
+
+  <button class="logout" id="logoutButton">
+    Logout
+  </button>
+</div>
+
+</div>
+</div>
+
+<footer>
+  © 2026 Soko Yangu
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const db = supabase.createClient(
+  "https://pvhzkzadfdpvgvliirxr.supabase.co",
+  "sb_publishable_Jd8HUSb-wBdrfDJTmXeNGQ_KH0Xe4Cz"
+);
+
+const status = document.getElementById("status");
+const dashboard = document.getElementById("dashboard");
+
+async function loadDashboard() {
+
+  try {
+
+    const { data, error } =
+      await db.auth.getUser();
+
+    if (error || !data.user) {
+      window.location.replace("seller.html");
+      return;
+    }
+
+    const user = data.user;
+
+    const { data: seller, error: sellerError } =
+      await db
+        .from("Sellers")
+        .select("name, business_name, phone, location")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (sellerError) throw sellerError;
+
+    if (!seller) {
+      status.textContent =
+        "Seller profile not found. Please complete your registration.";
+      return;
+    }
+
+    document.getElementById("welcome").textContent =
+      "Welcome, " + seller.business_name;
+
+    document.getElementById("sellerName").textContent =
+      seller.name || "";
+
+    document.getElementById("businessName").textContent =
+      seller.business_name || "";
+
+    document.getElementById("sellerPhone").textContent =
+      seller.phone || "";
+
+    document.getElementById("sellerLocation").textContent =
+      seller.location || "";
+
+    status.textContent = "";
+    dashboard.hidden = false;
+
+  } catch (error) {
+
+    status.style.color = "red";
+    status.textContent = error.message;
+
+  }
+
+}
+
+document.getElementById("logoutButton")
+  .addEventListener("click", async function() {
+
+    const { error } = await db.auth.signOut();
+
+    if (error) {
+      status.style.color = "red";
+      status.textContent = error.message;
+      return;
+    }
+
+    window.location.replace("seller.html");
+
+  });
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>
