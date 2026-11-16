@@ -174,7 +174,7 @@ footer {
       <h3>Office Chair</h3>
       <p>Nairobi</p>
       <p class="price">KSh 6,500</p>
-      <button onclick="comingSoon()">View Product</button>
+      <button onclick="viewProduct(this)">View Product</button>
     </div>
 
     <div class="product">
@@ -215,7 +215,21 @@ function searchProducts() {
 function comingSoon() {
   alert("This feature will be available soon!");
 }
+
+function viewProduct(button) {
+  const product = button.closest(".product");
+  const name = product.querySelector("h3").textContent;
+  const location = product.querySelector("p").textContent;
+  const price = product.querySelector(".price").textContent;
+
+  alert(
+    name + "\n\n" +
+    "Price: " + price + "\n" +
+    "Location: " + location
+  );
+}
 </script>
+
 
 </body>
 </html>
