@@ -1,4 +1,4 @@
-
+7
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -221,10 +221,11 @@ async function loadDashboard() {
     if (sellerError) throw sellerError;
 
     if (!seller) {
-      status.textContent =
-        "Seller profile not found. Please complete your registration.";
-      return;
-    }
+  window.location.replace("seller.html");
+  return;
+}
+  
+        
 
     document.getElementById("welcome").textContent =
       "Welcome, " + seller.business_name;
