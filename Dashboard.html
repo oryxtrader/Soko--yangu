@@ -253,6 +253,15 @@ async function loadDashboard() {
     document.getElementById("sellerLocation").textContent =
       seller.location || "";
 
+const { count, error: productError } = await db
+  .from("Products")
+  .select("*", { count: "exact", head: true })
+  .eq("seller_id", data.user.id);
+
+if (productError) throw productError;
+
+document.getElementById("totalProducts").textContent = count ?? 0;
+
     status.textContent = "";
     dashboard.hidden = false;
 
